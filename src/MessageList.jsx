@@ -2,17 +2,16 @@ import React, {Component} from 'react';
 
 class MessageList extends Component {
   render() {
-    console.log("Rendering <App/>");
+    console.log("Rendering <MessageList/>");
     return (
       <div>
-        <nav>
-          <h1>Chatty</h1>
-        </nav>
         <div id="message-list">
-          <div className="message">
-            <span className="username">Anonymous1</span>
-            <span className="content">I won't be impressed with technology until I can download food.</span>
-          </div>
+        {this.props.messages.map(function(message) {
+          return (<div className="message" key={message.id}>
+                    <span className="username">{message.username}</span>
+                    <span className="content">{message.content}</span>
+                  </div>);
+        })}
           <div className="message system">
             Anonymous1 changed their name to nomnom.
           </div>
