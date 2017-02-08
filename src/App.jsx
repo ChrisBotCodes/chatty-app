@@ -4,42 +4,26 @@ import MessageList from './MessageList.jsx';
 
 const initialState = {
   currentUser: {name: "Bob"}, // optional. if currentUser is not defined, it means the user is Anonymous
-  messages: [
-    {
-      id: 1,
-      username: "Bob",
-      content: "Has anyone seen my marbles?"
-    },
-    {
-      id: 2,
-      username: "Anonymous",
-      content: "No, I think you lost them. You lost your marbles Bob. You lost them for good."
-    }
-  ]
+  messages: [],
 }
 
 class App extends Component {
   constructor(props) {
     super(props);
-    // set initial state to id/username/content data
     this.state = initialState;
 
     this.updateState = (newName) => {
       this.setState({currentUser: {name: newName}})
     }
+    this.ws = undefined;
   }
 
-  componentDidMount() {
-  console.log("componentDidMount <App />");
-  setTimeout(() => {
-    console.log("Simulating incoming message");
-    // Add a new message to the list of messages in the data store
-    const newMessage = {id: 3, username: "Michelle", content: "Hello there!"};
-    const messages = this.state.messages.concat(newMessage)
-    // Update the state of the app component.
-    // Calling setState will trigger a call to render() in App and all child components.
-    this.setState({messages: messages})
-    }, 3000);
+  _handleMessageReceive = (message) => {
+    this.setState({messages: JSON.parse(message.data)});
+  }
+
+  _handleMessageSend = (message) => {
+    this.ws.send(JSON.stringify(message))
   }
 
   _handlePressEnter = (e) => {
@@ -47,10 +31,24 @@ class App extends Component {
       const newMessage = {id: this.state.messages.length+1, username: this.state.currentUser.name, content: e.target.value};
       const messages = this.state.messages.concat(newMessage)
       this.setState({messages: messages});
+      let messageToServer = {type: 'message',
+                       name: this.state.currentUser.name,
+                       content: e.target.value};
+      this._handleMessageSend(messageToServer);
+      // reset the message input form
+      // document.getElementById("new-message").value = "";
     }
-    console.log(e.target.value);
-    console.log(e.key);
+  }
 
+  componentDidMount() {
+    console.log("componentDidMount <App />");
+
+    // connect to websocket server
+    this.ws = new WebSocket('ws://localhost:4000');
+    this.ws.addEventListener('open', () => {
+      console.log('Connected to server');
+    })
+    this.ws.addEventListener('message', this._handleMessageReceive);
   }
 
   render() {
