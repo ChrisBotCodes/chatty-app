@@ -21,6 +21,16 @@ messages = [];
 // Set up a callback that will run when a client connects to the server
 // When a client connects they are assigned a socket, represented by
 // the ws parameter in the callback.
+
+// broadcast message to all clients
+let broadcast = (messageToBroadcast) => {
+  wss.clients.forEach((client) => {
+    if (client.readyState === SocketServer.OPEN) {
+      client.send(JSON.stringify(messageToBroadcast));
+    }
+  })
+}
+
 wss.on('connection', (ws) => {
   console.log('Client connected');
   ws.send(JSON.stringify(messages))
@@ -28,16 +38,12 @@ wss.on('connection', (ws) => {
   // receive message from client
   ws.on('message', (message) => {
     let parsedMessage = JSON.parse(message);
-    let messageToClient = {id: uuid.v4(),
+    let messageToClients = {id: uuid.v4(),
                            name: parsedMessage.name,
                            content: parsedMessage.content};
     console.log(`User ${parsedMessage.name} said ${parsedMessage.content}`);
-    console.log(messageToClient);
-
-    // broadcast message to all clients
-    // wss.clients.forEach((data) => {
-    //   if (client !==)
-    // })
+    console.log(messageToClients);
+    broadcast(messageToClients);
   })
 
   // Set up a callback for when a client closes the socket. This usually means they closed their browser.
