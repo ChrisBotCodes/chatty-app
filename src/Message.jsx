@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 
 class Message extends Component {
   render() {
+    console.log(this.props.message);
     console.log("Rendering <Message/>");
     return (
       <div className="message" key={this.props.message.id}>

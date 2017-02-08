@@ -44,7 +44,7 @@ class App extends Component {
 
   _handlePressEnter = (e) => {
     if (e.key === "Enter") {
-      const newMessage = {id: this.state.messages.length+2, username: this.state.currentUser.name, content: e.target.value};
+      const newMessage = {id: this.state.messages.length+1, username: this.state.currentUser.name, content: e.target.value};
       const messages = this.state.messages.concat(newMessage)
       this.setState({messages: messages});
     }
