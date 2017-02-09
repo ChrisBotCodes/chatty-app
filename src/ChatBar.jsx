@@ -8,13 +8,23 @@ constructor(props) {
   // this.handleChange = this.handleChange.bind(this);
   // this.handleSubmit = this.handleSubmit.bind(this);
 }
+onEnterMessage = (e) => {
+  if (e.key === "Enter" && e.target.value !== '') {
+    this.props.onMessageSubmit(e.target.value)
+  }
+}
 
+onEnterName = (e) => {
+  if (e.key === "Enter") {
+    this.props.onNameSubmit(e.target.value)
+  }
+}
   render() {
     console.log("Rendering <ChatBar/>");
     return (
       <footer>
-        <input id="username" type="text" placeholder="Your Name (Optional)" value={this.props.name} readOnly />
-        <input id="new-message" type="text" placeholder="Type a message and hit ENTER" onKeyPress={this.props._handlePressEnter} />
+        <input id="username" type="text" placeholder="Your Name (Optional)" onKeyPress={this.onEnterName} />
+        <input id="new-message" type="text" placeholder="Type a message and hit ENTER" onKeyPress={this.onEnterMessage} />
       </footer>
     );
   }

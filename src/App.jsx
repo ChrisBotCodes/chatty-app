@@ -3,7 +3,7 @@ import ChatBar from './ChatBar.jsx';
 import MessageList from './MessageList.jsx';
 
 const initialState = {
-  currentUser: {name: "Bob"}, // optional. if currentUser is not defined, it means the user is Anonymous
+  currentUser: {name: 'Anonymous'}, // optional. if currentUser is not defined, it means the user is Anonymous
   messages: [],
 }
 
@@ -12,29 +12,34 @@ class App extends Component {
     super(props);
     this.state = initialState;
 
-    // this.updateState = (newName) => {
-    //   this.setState({currentUser: {name: newName}})
-    // }
+
     this.ws = undefined;
   }
 
-  _handleMessageReceive = (message) => {
+  onMessageReceive = (message) => {
     console.log("msg from server: ", JSON.parse(message.data));
     this.setState({messages: JSON.parse(message.data)});
   }
 
-  _handleMessageSend = (message) => {
+  onMessageSend = (message) => {
     this.ws.send(JSON.stringify(message))
   }
 
-  _handlePressEnter = (e) => {
-    if (e.key === "Enter") {
-      let messageToServer = {type: 'message',
-                             name: this.state.currentUser.name,
-                             content: e.target.value};
-      this._handleMessageSend(messageToServer);
-      // reset the message input form
-      document.getElementById("new-message").value = "";
+  onMessageSubmit = (content) => {
+    let messageToServer = {type: 'message',
+                           name: this.state.currentUser.name,
+                           content: content};
+    this.onMessageSend(messageToServer);
+    // reset the message input form
+    document.getElementById("new-message").value = "";
+  }
+
+  onNameSubmit = (name) => {
+    console.log('name: ', name);
+    if (name === '') {
+      this.setState({currentUser: {name: 'Anonymous'}});
+    } else {
+      this.setState({currentUser: {name: name}});
     }
   }
 
@@ -46,7 +51,7 @@ class App extends Component {
     this.ws.addEventListener('open', () => {
       console.log('Connected to server');
     })
-    this.ws.addEventListener('message', this._handleMessageReceive);
+    this.ws.addEventListener('message', this.onMessageReceive);
   }
 
   render() {
@@ -56,7 +61,7 @@ class App extends Component {
           <h1>Chatty</h1>
         </nav>
         <MessageList messages={this.state.messages}/>
-        <ChatBar name={this.state.currentUser.name} _handlePressEnter={this._handlePressEnter}/>
+        <ChatBar onMessageSubmit={this.onMessageSubmit} onNameSubmit={this.onNameSubmit} />
       </div>
     );
   }

@@ -37,12 +37,13 @@ wss.on('connection', (ws) => {
 
   // receive message from client
   ws.on('message', (message) => {
+    console.log(message);
     let parsedMessage = JSON.parse(message);
     let messageToClients = {uuid: uuid.v4(),
                            name: parsedMessage.name,
                            content: parsedMessage.content};
     messages = [...messages, messageToClients];
-    console.log(`User ${parsedMessage.username} said ${parsedMessage.content}`);
+    console.log(`User ${parsedMessage.name} said ${parsedMessage.content}`);
     console.log(messageToClients);
     wss.broadcast(messages);
   })
