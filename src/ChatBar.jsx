@@ -16,7 +16,11 @@ onEnterMessage = (e) => {
 
 onEnterName = (e) => {
   if (e.key === "Enter") {
-    this.props.onNameSubmit(e.target.value)
+    if (e.target.value) {
+      this.props.onNameSubmit(e.target.value)
+    } else {
+      this.props.onNameSubmit('Anonymous');
+    }
   }
 }
   render() {

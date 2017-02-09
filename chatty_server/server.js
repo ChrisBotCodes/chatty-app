@@ -33,19 +33,34 @@ wss.broadcast = (messageToBroadcast) => {
 
 wss.on('connection', (ws) => {
   console.log('Client connected');
-  ws.send(JSON.stringify(messages))
+  let initialMessages = {type: 'initialMessages', messages: messages }
+  ws.send(JSON.stringify(initialMessages))
 
   // receive message from client
   ws.on('message', (message) => {
-    console.log(message);
     let parsedMessage = JSON.parse(message);
-    let messageToClients = {uuid: uuid.v4(),
-                           name: parsedMessage.name,
-                           content: parsedMessage.content};
-    messages = [...messages, messageToClients];
-    console.log(`User ${parsedMessage.name} said ${parsedMessage.content}`);
-    console.log(messageToClients);
-    wss.broadcast(messages);
+    switch(parsedMessage.type) {
+      case 'postMessage':
+        let messageToClients = {type: 'incomingMessage',
+                                uuid: uuid.v4(),
+                                name: parsedMessage.name,
+                                content: parsedMessage.content};
+        messages = [...messages, messageToClients];
+        let newMessage = {type: 'incomingMessage', messages: messages};
+        wss.broadcast(newMessage);
+        break;
+      case 'postNotification':
+        let notificationToClients = {type: 'incomingNotification',
+                                     uuid: uuid.v4(),
+                                     oldName: parsedMessage.oldName,
+                                     newName: parsedMessage.newName};
+        messages = [...messages, notificationToClients];
+        let newNotification = {type: 'incomingNotification', messages: messages};
+        wss.broadcast(newNotification);
+        break;
+      default:
+        throw new Error("Unknown event type " + parsedMessage.type);
+    }
   })
 
   // Set up a callback for when a client closes the socket. This usually means they closed their browser.

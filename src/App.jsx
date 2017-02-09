@@ -11,36 +11,53 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = initialState;
-
-
     this.ws = undefined;
   }
 
   onMessageReceive = (message) => {
-    console.log("msg from server: ", JSON.parse(message.data));
-    this.setState({messages: JSON.parse(message.data)});
+    let parsedMessage = JSON.parse(message.data);
+    console.log('parsed message----->', parsedMessage);
+    switch(parsedMessage.type) {
+      case 'initialMessages':
+        this.setState({messages: parsedMessage.messages});
+        break;
+      case 'incomingMessage':
+        this.setState({messages: parsedMessage.messages});
+        break;
+      case 'incomingNotification':
+        this.setState({currentUser: {name: parsedMessage.messages[parsedMessage.messages.length - 1].newName},
+                       messages: parsedMessage.messages});
+        break;
+      default:
+        throw new Error("Unknown event type " + parsedMessage.type);
+    }
   }
 
   onMessageSend = (message) => {
     this.ws.send(JSON.stringify(message))
   }
 
+  onNameSubmit = (name) => {
+    console.log('name: ', name);
+    let nameToServer = {type: 'postNotification',
+                        oldName: this.state.currentUser.name,
+                        newName: name};
+    this.onMessageSend(nameToServer);
+    // if (name === '') {
+    //   this.setState({currentUser: {name: 'Anonymous'}});
+    // } else {
+    //   this.setState({currentUser: {name: name}});
+    // }
+  }
+
   onMessageSubmit = (content) => {
-    let messageToServer = {type: 'message',
+    let messageToServer = {type: 'postMessage',
                            name: this.state.currentUser.name,
                            content: content};
+    console.log('messageToServer: ', messageToServer);
     this.onMessageSend(messageToServer);
     // reset the message input form
     document.getElementById("new-message").value = "";
-  }
-
-  onNameSubmit = (name) => {
-    console.log('name: ', name);
-    if (name === '') {
-      this.setState({currentUser: {name: 'Anonymous'}});
-    } else {
-      this.setState({currentUser: {name: name}});
-    }
   }
 
   componentDidMount() {
@@ -60,7 +77,7 @@ class App extends Component {
         <nav>
           <h1>Chatty</h1>
         </nav>
-        <MessageList messages={this.state.messages}/>
+        <MessageList state={this.state}/>
         <ChatBar onMessageSubmit={this.onMessageSubmit} onNameSubmit={this.onNameSubmit} />
       </div>
     );
