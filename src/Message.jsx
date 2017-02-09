@@ -6,7 +6,7 @@ class Message extends Component {
     console.log("Rendering <Message/>");
     return (
       <div className="message" key={this.props.message.id}>
-        <span className="username">{this.props.message.username}</span>
+        <span className="username">{this.props.message.name}</span>
         <span className="content">{this.props.message.content}</span>
       </div>
     );

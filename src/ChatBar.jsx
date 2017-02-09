@@ -13,7 +13,7 @@ constructor(props) {
     console.log("Rendering <ChatBar/>");
     return (
       <footer>
-        <input id="username" type="text" placeholder="Your Name (Optional)" value={this.props.username} readOnly />
+        <input id="username" type="text" placeholder="Your Name (Optional)" value={this.props.name} readOnly />
         <input id="new-message" type="text" placeholder="Type a message and hit ENTER" onKeyPress={this.props._handlePressEnter} />
       </footer>
     );

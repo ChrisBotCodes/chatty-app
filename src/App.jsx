@@ -12,13 +12,14 @@ class App extends Component {
     super(props);
     this.state = initialState;
 
-    this.updateState = (newName) => {
-      this.setState({currentUser: {name: newName}})
-    }
+    // this.updateState = (newName) => {
+    //   this.setState({currentUser: {name: newName}})
+    // }
     this.ws = undefined;
   }
 
   _handleMessageReceive = (message) => {
+    console.log("msg from server: ", JSON.parse(message.data));
     this.setState({messages: JSON.parse(message.data)});
   }
 
@@ -28,15 +29,12 @@ class App extends Component {
 
   _handlePressEnter = (e) => {
     if (e.key === "Enter") {
-      const newMessage = {id: this.state.messages.length+1, username: this.state.currentUser.name, content: e.target.value};
-      const messages = this.state.messages.concat(newMessage)
-      this.setState({messages: messages});
       let messageToServer = {type: 'message',
-                       name: this.state.currentUser.name,
-                       content: e.target.value};
+                             name: this.state.currentUser.name,
+                             content: e.target.value};
       this._handleMessageSend(messageToServer);
       // reset the message input form
-      // document.getElementById("new-message").value = "";
+      document.getElementById("new-message").value = "";
     }
   }
 
@@ -58,7 +56,7 @@ class App extends Component {
           <h1>Chatty</h1>
         </nav>
         <MessageList messages={this.state.messages}/>
-        <ChatBar username={this.state.currentUser.name} _handlePressEnter={this._handlePressEnter}/>
+        <ChatBar name={this.state.currentUser.name} _handlePressEnter={this._handlePressEnter}/>
       </div>
     );
   }
