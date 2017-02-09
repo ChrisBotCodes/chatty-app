@@ -25,7 +25,9 @@ class App extends Component {
         this.setState({messages: parsedMessage.messages});
         break;
       case 'incomingNotification':
-        this.setState({currentUser: {name: parsedMessage.messages[parsedMessage.messages.length - 1].newName},
+      let oldName = parsedMessage.messages[parsedMessage.messages.length - 1].oldName
+      let newName = parsedMessage.messages[parsedMessage.messages.length - 1].newName
+        this.setState({currentUser: {name: newName, oldName: oldName},
                        messages: parsedMessage.messages});
         break;
       default:
@@ -78,7 +80,7 @@ class App extends Component {
           <h1>Chatty</h1>
         </nav>
         <MessageList state={this.state}/>
-        <ChatBar onMessageSubmit={this.onMessageSubmit} onNameSubmit={this.onNameSubmit} />
+        <ChatBar state={this.state} onMessageSubmit={this.onMessageSubmit} onNameSubmit={this.onNameSubmit} />
       </div>
     );
   }

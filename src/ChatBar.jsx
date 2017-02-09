@@ -16,10 +16,16 @@ onEnterMessage = (e) => {
 
 onEnterName = (e) => {
   if (e.key === "Enter") {
-    if (e.target.value) {
-      this.props.onNameSubmit(e.target.value)
-    } else {
-      this.props.onNameSubmit('Anonymous');
+    if (this.props.state.currentUser.name === 'Anonymous') {
+      if (e.target.value && e.target.value !== 'Anonymous') {
+        this.props.onNameSubmit(e.target.value)
+      }
+    } else if (e.target.value !== this.props.state.currentUser.name) {
+      if (e.target.value === '') {
+        this.props.onNameSubmit('Anonymous');
+      } else {
+        this.props.onNameSubmit(e.target.value)
+      }
     }
   }
 }
