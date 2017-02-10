@@ -33,6 +33,10 @@ class App extends Component {
         break;
       case 'userCount':
         this.setState({userCount: parsedMessage.number})
+        break;
+      case 'userConnection':
+        this.setState({messages: parsedMessage.messages});
+        break;
       default:
         throw new Error("Unknown event type " + parsedMessage.type);
     }

@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import Message from './Message.jsx';
 import Notification from './Notification.jsx';
+import UserConnection from './UserConnection.jsx';
 
 class MessageList extends Component {
   render() {
@@ -10,8 +11,10 @@ class MessageList extends Component {
             {this.props.state.messages.map(message => {
               if (message.type === 'incomingMessage') {
                 return <Message key={message.uuid} message={message}/>
-              } else {
+              } else if (message.type === 'incomingNotification') {
                 return <Notification key={message.uuid} message={message}/>
+              } else {
+                return <UserConnection key={message.uuid} message={message}/>
               }
             })}</div>
     )

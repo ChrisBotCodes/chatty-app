@@ -17,6 +17,8 @@ const server = express()
 const wss = new SocketServer.Server({ server });
 
 messages = [];
+userConnected = {type: 'userConnection', content: 'A new user has connected to the chat.'};
+userDisconnected = {type: 'userConnection', content: 'A user has disconnected from the chat.'};
 
 // Set up a callback that will run when a client connects to the server
 // When a client connects they are assigned a socket, represented by
@@ -33,6 +35,7 @@ wss.broadcast = (messageToBroadcast) => {
 
 onlineUsers = () => {
   let onlineUsers = {type: 'userCount',
+                    uuid: uuid.v4(),
                      number: wss.clients.size};
   wss.broadcast(onlineUsers);
 }
@@ -40,7 +43,10 @@ onlineUsers = () => {
 wss.on('connection', (ws) => {
   console.log('Client connected');
   onlineUsers();
-  console.log('online users connected: ', wss.clients.size)
+  console.log('online users connected: ', wss.clients.size);
+  messages = [...messages, userConnected];
+  let newUserConnected = {type: 'userConnection', messages: messages};
+  wss.broadcast(newUserConnected);
   let initialMessages = {type: 'initialMessages', messages: messages }
   ws.send(JSON.stringify(initialMessages))
 
@@ -75,6 +81,9 @@ wss.on('connection', (ws) => {
   ws.on('close', () => {
     console.log('Client disconnected');
     onlineUsers();
-    console.log('online users connected: ', wss.clients.size)
+    console.log('online users connected: ', wss.clients.size);
+    messages = [...messages, userDisconnected];
+    let newUserDisconnected = {type: 'userConnection', messages: messages};
+    wss.broadcast(newUserDisconnected);
   })
 });
