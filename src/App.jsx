@@ -1,10 +1,12 @@
 import React, {Component} from 'react';
 import ChatBar from './ChatBar.jsx';
 import MessageList from './MessageList.jsx';
+import Nav from './Nav.jsx';
 
 const initialState = {
   currentUser: {name: 'Anonymous'}, // optional. if currentUser is not defined, it means the user is Anonymous
   messages: [],
+  userCount: 0
 }
 
 class App extends Component {
@@ -16,7 +18,6 @@ class App extends Component {
 
   onMessageReceive = (message) => {
     let parsedMessage = JSON.parse(message.data);
-    console.log('parsed message----->', parsedMessage);
     switch(parsedMessage.type) {
       case 'initialMessages':
         this.setState({messages: parsedMessage.messages});
@@ -25,11 +26,13 @@ class App extends Component {
         this.setState({messages: parsedMessage.messages});
         break;
       case 'incomingNotification':
-      let oldName = parsedMessage.messages[parsedMessage.messages.length - 1].oldName
-      let newName = parsedMessage.messages[parsedMessage.messages.length - 1].newName
+        let oldName = parsedMessage.messages[parsedMessage.messages.length - 1].oldName
+        let newName = parsedMessage.messages[parsedMessage.messages.length - 1].newName
         this.setState({currentUser: {name: newName, oldName: oldName},
                        messages: parsedMessage.messages});
         break;
+      case 'userCount':
+        this.setState({userCount: parsedMessage.number})
       default:
         throw new Error("Unknown event type " + parsedMessage.type);
     }
@@ -76,9 +79,7 @@ class App extends Component {
   render() {
     return (
       <div className='wrapper'>
-        <nav>
-          <h1>Chatty</h1>
-        </nav>
+        <Nav count={this.state.userCount}/>
         <MessageList state={this.state}/>
         <ChatBar state={this.state} onMessageSubmit={this.onMessageSubmit} onNameSubmit={this.onNameSubmit} />
       </div>

@@ -17,8 +17,14 @@ nav {
 
 nav h1 {
   margin: 0;
+  display: inline-block;
 }
 
+nav h3 {
+  margin: 0;
+  display: inline-block;
+  float: right;
+}
 #message-list {
   height: calc(100vh - 131px);
   padding: 16px 8px;
