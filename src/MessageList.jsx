@@ -4,6 +4,13 @@ import Notification from './Notification.jsx';
 import UserConnection from './UserConnection.jsx';
 
 class MessageList extends Component {
+
+  componentDidUpdate() {
+    // scroll to bottom of message list when new message is sent
+    const messageList = document.getElementById('message-list');
+    messageList.scrollTop = messageList.scrollHeight;
+  }
+
   render() {
     console.log("Rendering <MessageList/>");
 

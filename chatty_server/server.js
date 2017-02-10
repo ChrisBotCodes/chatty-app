@@ -17,8 +17,6 @@ const server = express()
 const wss = new SocketServer.Server({ server });
 
 messages = [];
-userConnected = {type: 'userConnection', uuid: uuid.v4(), content: 'A new user has connected to the chat.'};
-userDisconnected = {type: 'userConnection', uuid: uuid.v4(), content: 'A user has disconnected from the chat.'};
 
 // Set up a callback that will run when a client connects to the server
 // When a client connects they are assigned a socket, represented by
@@ -40,9 +38,24 @@ onlineUsers = () => {
   wss.broadcast(onlineUsers);
 }
 
+userConnected = () => {
+  let userConnected = {type: 'userConnection',
+                      uuid: uuid.v4(),
+                      content: 'A new user has connected to the chat.'};
+  return userConnected;
+}
+
+userDisconnected = () => {
+  let userDisconnected = {type: 'userConnection',
+                          uuid: uuid.v4(),
+                          content: 'A user has disconnected from the chat.'};
+  return userDisconnected;
+}
+
 randomColor = () => {
-  let colorPalette = ['blue', 'red', 'darkgreen', 'pink', 'orange', 'cyan'];
-  return colorPalette[Math.floor(Math.random() * 6 + 1)];
+  let colorPalette = ['#010777', '#a50000', '#186b00', '#f24fd9', '#ef8f00', '#009aa5', '#71a500'];
+  return colorPalette[Math.floor(Math.random() * 6) + 1];
+
 }
 
 wss.on('connection', (ws) => {
@@ -55,9 +68,13 @@ wss.on('connection', (ws) => {
   // display that a user has connected to the chat
   onlineUsers();
   console.log('online users connected: ', wss.clients.size);
-  messages = [...messages, userConnected];
+
+  // send a user connection notification
+  messages = [...messages, userConnected()];
   let newUserConnected = {type: 'userConnection', messages: messages};
   wss.broadcast(newUserConnected);
+
+  // send initial message list
   let initialMessages = {type: 'initialMessages', messages: messages }
   ws.send(JSON.stringify(initialMessages))
 
@@ -73,6 +90,7 @@ wss.on('connection', (ws) => {
                                 color: parsedMessage.color};
         messages = [...messages, messageToClients];
         let newMessage = {type: 'incomingMessage', messages: messages};
+        console.log('message to client----> ', newMessage);
         wss.broadcast(newMessage);
         break;
       case 'postNotification':
@@ -93,10 +111,12 @@ wss.on('connection', (ws) => {
   ws.on('close', () => {
     console.log('Client disconnected');
 
-    // display that a user has connected to the chat
+    // display that a user has disconnected from the chat
     onlineUsers();
     console.log('online users connected: ', wss.clients.size);
-    messages = [...messages, userDisconnected];
+
+    // send a user disconnection notification
+    messages = [...messages, userDisconnected()];
     let newUserDisconnected = {type: 'userConnection', messages: messages};
     wss.broadcast(newUserDisconnected);
   })

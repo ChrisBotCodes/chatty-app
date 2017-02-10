@@ -27,6 +27,7 @@ class App extends Component {
         this.setState({messages: parsedMessage.messages});
         break;
       case 'incomingNotification':
+        console.log('message back in client----> ', parsedMessage);
         let oldName = parsedMessage.messages[parsedMessage.messages.length - 1].oldName
         let newName = parsedMessage.messages[parsedMessage.messages.length - 1].newName
         this.setState({currentUser: {name: newName, oldName: oldName},
