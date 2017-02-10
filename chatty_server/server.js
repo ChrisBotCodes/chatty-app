@@ -16,6 +16,7 @@ const server = express()
 // Create the WebSockets server
 const wss = new SocketServer.Server({ server });
 
+// message list starts empty
 messages = [];
 
 // Set up a callback that will run when a client connects to the server
@@ -31,6 +32,7 @@ wss.broadcast = (messageToBroadcast) => {
   })
 }
 
+// handles the number of users online
 onlineUsers = () => {
   let onlineUsers = {type: 'userCount',
                      uuid: uuid.v4(),
@@ -38,6 +40,7 @@ onlineUsers = () => {
   wss.broadcast(onlineUsers);
 }
 
+// handles when a user connects
 userConnected = () => {
   let userConnected = {type: 'userConnection',
                       uuid: uuid.v4(),
@@ -45,6 +48,7 @@ userConnected = () => {
   return userConnected;
 }
 
+// handles when a user disconnects
 userDisconnected = () => {
   let userDisconnected = {type: 'userConnection',
                           uuid: uuid.v4(),
@@ -52,6 +56,7 @@ userDisconnected = () => {
   return userDisconnected;
 }
 
+// chooses a random color to apply to a user's name
 randomColor = () => {
   let colorPalette = ['#010777', '#a50000', '#186b00', '#f24fd9', '#ef8f00', '#009aa5', '#71a500'];
   return colorPalette[Math.floor(Math.random() * 6) + 1];
@@ -78,7 +83,7 @@ wss.on('connection', (ws) => {
   let initialMessages = {type: 'initialMessages', messages: messages }
   ws.send(JSON.stringify(initialMessages))
 
-  // receive message from client
+  // receive message or notification from client
   ws.on('message', (message) => {
     let parsedMessage = JSON.parse(message);
     switch(parsedMessage.type) {

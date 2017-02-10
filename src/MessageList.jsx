@@ -5,8 +5,8 @@ import UserConnection from './UserConnection.jsx';
 
 class MessageList extends Component {
 
+  // scroll to bottom of message list when new message is sent
   componentDidUpdate() {
-    // scroll to bottom of message list when new message is sent
     const messageList = document.getElementById('message-list');
     messageList.scrollTop = messageList.scrollHeight;
   }
@@ -14,6 +14,7 @@ class MessageList extends Component {
   render() {
     console.log("Rendering <MessageList/>");
 
+    // return either a message, a notification, or a user connection update depending on message type
     return (<div id="message-list">
             {this.props.state.messages.map(message => {
               if (message.type === 'incomingMessage') {
