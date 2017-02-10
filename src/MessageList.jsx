@@ -10,7 +10,7 @@ class MessageList extends Component {
     return (<div id="message-list">
             {this.props.state.messages.map(message => {
               if (message.type === 'incomingMessage') {
-                return <Message key={message.uuid} message={message}/>
+                return <Message key={message.uuid} message={message} color={this.props.state.color}/>
               } else if (message.type === 'incomingNotification') {
                 return <Notification key={message.uuid} message={message}/>
               } else {

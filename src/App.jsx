@@ -6,7 +6,8 @@ import Nav from './Nav.jsx';
 const initialState = {
   currentUser: {name: 'Anonymous'}, // optional. if currentUser is not defined, it means the user is Anonymous
   messages: [],
-  userCount: 0
+  userCount: 0,
+  color: 'black'
 }
 
 class App extends Component {
@@ -37,6 +38,9 @@ class App extends Component {
       case 'userConnection':
         this.setState({messages: parsedMessage.messages});
         break;
+      case 'initialColor':
+        this.setState({color: parsedMessage.color});
+        break;
       default:
         throw new Error("Unknown event type " + parsedMessage.type);
     }
@@ -62,7 +66,8 @@ class App extends Component {
   onMessageSubmit = (content) => {
     let messageToServer = {type: 'postMessage',
                            name: this.state.currentUser.name,
-                           content: content};
+                           content: content,
+                           color: this.state.color};
     console.log('messageToServer: ', messageToServer);
     this.onMessageSend(messageToServer);
     // reset the message input form
