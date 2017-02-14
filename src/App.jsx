@@ -31,7 +31,7 @@ class App extends Component {
         console.log('message back in client----> ', parsedMessage);
         let oldName = parsedMessage.messages[parsedMessage.messages.length - 1].oldName
         let newName = parsedMessage.messages[parsedMessage.messages.length - 1].newName
-        this.setState({currentUser: {name: newName, oldName: oldName},
+        this.setState({currentUser: {...this.state.currentUser, oldName: oldName},
                        messages: parsedMessage.messages});
         break;
       case 'userCount':
@@ -60,6 +60,7 @@ class App extends Component {
                         oldName: this.state.currentUser.name,
                         newName: name};
     this.onMessageSend(nameToServer);
+    this.setState({currentUser: {name: name}});
   }
 
   // handles sending info to server to send a message
